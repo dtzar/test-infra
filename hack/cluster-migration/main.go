@@ -208,11 +208,11 @@ func getAllRepos(s status) []string {
 	// find Azure repos
 	for _, cluster := range s.Clusters {
 		for _, repo := range cluster.RepoStatus {
-			//if strings.Contains(repo.RepoName, "azure") || strings.Contains(repo.RepoName, "Azure") ||
-			//	strings.Contains(repo.RepoName, "windows") || strings.Contains(repo.RepoName, "Windows") ||
-			//	strings.Contains(repo.RepoName, "win") || strings.Contains(repo.RepoName, "Win") ||
-			//	strings.Contains(repo.RepoName, "capz") || strings.Contains(repo.RepoName, "CAPZ") {
-			if strings.Contains(repo.RepoName, "image-builder") || strings.Contains(repo.RepoName, "Image-Builder") {
+			if
+			// strings.Contains(repo.RepoName, "cloud-provider-azure") {
+			// strings.Contains(repo.RepoName, "azuredisk-csi-driver") {
+			strings.Contains(repo.RepoName, "azurefile-csi-driver") {
+				// if strings.Contains(repo.RepoName, "cluster-api-provider-azure"){
 				if !slices.Contains(repos, repo.RepoName) {
 					repos = append(repos, repo.RepoName)
 				}
