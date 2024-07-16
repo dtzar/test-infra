@@ -211,6 +211,7 @@ func getAllRepos(s status) []string {
 			if
 			// strings.Contains(repo.RepoName, "cloud-provider-azure") {
 			// strings.Contains(repo.RepoName, "azuredisk-csi-driver") {
+			// strings.Contains(repo.RepoName, "secrets-store-csi-driver") {
 			strings.Contains(repo.RepoName, "azurefile-csi-driver") {
 				// if strings.Contains(repo.RepoName, "cluster-api-provider-azure"){
 				if !slices.Contains(repos, repo.RepoName) {
