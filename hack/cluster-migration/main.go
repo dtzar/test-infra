@@ -205,7 +205,7 @@ func getAllRepos(s status) []string {
 	//	}
 	//}
 
-	// find Azure repos
+	// find Azure repos go run main.go --todo-report
 	for _, cluster := range s.Clusters {
 		for _, repo := range cluster.RepoStatus {
 			if
