@@ -12,7 +12,7 @@ presubmits:
     - ^release-0.11$
     spec:
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-1.27
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-1.27
         command:
         - runner.sh
         - ./scripts/ci-build.sh
@@ -39,7 +39,7 @@ presubmits:
     - ^release-0.11$
     spec:
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-1.27
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-1.27
         command:
         - runner.sh
         - ./scripts/ci-make.sh
@@ -69,7 +69,7 @@ presubmits:
     run_if_changed: '^((api|cmd|config|controllers|hack|internal|scripts|test|util|webhook)/|go\.mod|go\.sum|Dockerfile|Makefile)'
     spec:
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-1.27
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-1.27
         command:
         - runner.sh
         - ./scripts/ci-apidiff.sh
@@ -95,7 +95,7 @@ presubmits:
     - ^release-0.11$
     spec:
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-1.27
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-1.27
         command:
         - "runner.sh"
         - ./scripts/ci-verify.sh
@@ -121,7 +121,7 @@ presubmits:
     run_if_changed: '^((api|cmd|config|controllers|hack|internal|scripts|test|util|webhook)/|go\.mod|go\.sum|Dockerfile|Makefile)'
     spec:
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-1.27
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-1.27
         args:
         - runner.sh
         - ./scripts/ci-test.sh
@@ -136,6 +136,7 @@ presubmits:
       testgrid-dashboards: sig-cluster-lifecycle-cluster-api-operator-0.11
       testgrid-tab-name: capi-operator-pr-test-release-0-11
   - name: pull-cluster-api-operator-e2e-release-0-11
+    cluster: eks-prow-build-cluster
     path_alias: "sigs.k8s.io/cluster-api-operator"
     optional: false
     decorate: true
@@ -148,7 +149,7 @@ presubmits:
     - ^release-0.11$
     spec:
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-1.27
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-1.27
         command:
           - runner.sh
         args:
@@ -156,12 +157,6 @@ presubmits:
         # docker-in-docker needs privileged mode
         securityContext:
           privileged: true
-        env:
-        - name: GITHUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: cluster-lifecycle-github-token
-              key: cluster-lifecycle-github-token
         resources:
           requests:
             cpu: "4"

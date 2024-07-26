@@ -13,7 +13,7 @@ postsubmits:
     spec:
       serviceAccountName: pusher
       containers:
-      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240523-29e3962433
+      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240725-9fc4a08b13
         command:
         - /run.sh
         args:
@@ -33,7 +33,7 @@ postsubmits:
     spec:
       serviceAccountName: pusher
       containers:
-      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240523-29e3962433
+      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240725-9fc4a08b13
         command:
         - /run.sh
         args:
@@ -53,7 +53,7 @@ postsubmits:
     spec:
       serviceAccountName: pusher
       containers:
-      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240523-29e3962433
+      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240725-9fc4a08b13
         command:
         - /run.sh
         args:
@@ -101,7 +101,7 @@ postsubmits:
     max_concurrency: 1
     spec:
       containers:
-      - image: gcr.io/k8s-prow/hmac:v20240711-e49eac682
+      - image: gcr.io/k8s-prow/hmac:v20240723-dbbd2d86b
         command:
         - hmac
         args:
@@ -150,7 +150,7 @@ postsubmits:
     spec:
       serviceAccountName: pusher
       containers:
-      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240705-131cd74733-test-infra
+      - image: gcr.io/k8s-staging-test-infra/kubekins-e2e:v20240725-1d8ea3e909-test-infra
         command:
         - runner.sh
         args:
@@ -197,7 +197,7 @@ postsubmits:
     spec:
       serviceAccountName: deployer # TODO(fejta): should be pusher
       containers:
-      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240523-29e3962433
+      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240725-9fc4a08b13
         command:
         - /run.sh
         args:
@@ -221,7 +221,7 @@ postsubmits:
     spec:
       serviceAccountName: deployer # TODO(fejta): should be pusher
       containers:
-      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240523-29e3962433
+      - image: gcr.io/k8s-staging-test-infra/image-builder:v20240725-9fc4a08b13
         command:
         - /run.sh
         args:
@@ -250,32 +250,6 @@ postsubmits:
       testgrid-tab-name: postsubmit-gencred-refresh-kubeconfig
       testgrid-alert-email: kubernetes-sig-testing-alerts@googlegroups.com, k8s-infra-oncall@google.com
       description: Runs gencred to refresh generated kubeconfigs.
-  - name: post-test-infra-upload-oncall
-    cluster: test-infra-trusted
-    branches:
-    - ^master$
-    run_if_changed: '^maintenance/oncall.html$'
-    decorate: true
-    spec:
-      serviceAccountName: pusher
-      containers:
-      - image: gcr.io/k8s-testimages/gcloud-in-go:v20210913-fc7c4e8
-        command:
-        - gsutil
-        args:
-        - cp
-        - -Z
-        - ./maintenance/oncall.html
-        - gs://test-infra-oncall/
-        resources:
-          requests:
-            memory: "1Gi"
-    annotations:
-      testgrid-dashboards: sig-testing-maintenance
-      testgrid-tab-name: oncall-update
-      testgrid-alert-email: kubernetes-sig-testing-alerts@googlegroups.com, k8s-infra-oncall@google.com
-      testgrid-num-failures-to-alert: '1'
-      description: Updates the html contents for go.k8s.io/oncall.
   - name: post-test-infra-upload-testgrid-config
     cluster: test-infra-trusted
     branches:
@@ -348,7 +322,7 @@ periodics:
     base_ref: master
   spec:
     containers:
-    - image: gcr.io/k8s-prow/generic-autobumper:v20240711-e49eac682
+    - image: gcr.io/k8s-prow/generic-autobumper:v20240723-dbbd2d86b
       command:
       - generic-autobumper
       args:
@@ -385,7 +359,7 @@ periodics:
     base_ref: master
   spec:
     containers:
-    - image: gcr.io/k8s-prow/generic-autobumper:v20240711-e49eac682
+    - image: gcr.io/k8s-prow/generic-autobumper:v20240723-dbbd2d86b
       command:
       - generic-autobumper
       args:
@@ -410,76 +384,6 @@ periodics:
     description: runs autobumper to create/update a PR that bumps prow to the latest RC without label 'skip-review'
     testgrid-alert-email: k8s-infra-oncall@google.com
     testgrid-num-failures-to-alert: '3'
-- cron: "30 * * * *"  # Run at half past the hour, every hour, every day
-  name: ci-test-infra-update-slack-oncall
-  cluster: test-infra-trusted
-  decorate: true
-  extra_refs:
-  - org: kubernetes
-    repo: test-infra
-    base_ref: master
-  spec:
-    containers:
-    - image: gcr.io/k8s-staging-test-infra/gcloud-in-go:v20230111-cd1b3caf9c
-      command:
-      - ./hack/make-rules/go-run/arbitrary.sh
-      args:
-      - run
-      - ./experiment/slack-oncall-updater
-      - --token-path=/etc/slack-token/token
-      volumeMounts:
-      - name: slack
-        mountPath: /etc/slack-token
-        readOnly: true
-    volumes:
-    - name: slack
-      secret:
-        secretName: slack-usergroup-token
-  annotations:
-    testgrid-dashboards: sig-testing-misc
-    testgrid-tab-name: slack-oncall-updater
-    testgrid-alert-email: ktbry@google.com, k8s-infra-oncall@google.com
-    description: runs experiment/slack-oncall-updater to update the membership of the test-infra-oncall slack usergroup
-- cron: "54 * * * *"  # Every hour at 54 minutes past the hour
-  name: ci-test-infra-branchprotector
-  cluster: test-infra-trusted
-  labels:
-    app: branchprotector
-  decorate: true
-  decoration_config:
-    timeout: 5h
-  extra_refs:
-  - org: kubernetes
-    repo: test-infra
-    base_ref: master
-  spec:
-    containers:
-    - name: branchprotector
-      image: gcr.io/k8s-prow/branchprotector:v20240711-e49eac682
-      command:
-      - branchprotector
-      args:
-      - --config-path=config/prow/config.yaml
-      - --job-config-path=config/jobs
-      - --github-token-path=/etc/github/oauth
-      - --confirm
-      - --github-endpoint=http://ghproxy.default.svc.cluster.local
-      - --github-endpoint=https://api.github.com
-      volumeMounts:
-      - name: oauth
-        mountPath: /etc/github
-        readOnly: true
-    volumes:
-    - name: oauth
-      secret:
-        secretName: oauth-token
-  annotations:
-    testgrid-num-failures-to-alert: '6'
-    testgrid-alert-stale-results-hours: '12'
-    testgrid-dashboards: sig-testing-misc
-    testgrid-tab-name: branchprotector
-    testgrid-alert-email: kubernetes-sig-testing-alerts@googlegroups.com, k8s-infra-oncall@google.com
-    description: Runs Prow's branchprotector to apply configured GitHub status context requirements and merge policies.
 - cron: "17 */6 * * *"  # Every 6 hours at 17 minutes past the hour
   name: ci-test-infra-gencred-refresh-kubeconfig
   cluster: test-infra-trusted
@@ -550,7 +454,7 @@ periodics:
     base_ref: master
   spec:
     containers:
-    - image: gcr.io/k8s-prow/checkconfig:v20240711-e49eac682
+    - image: gcr.io/k8s-prow/checkconfig:v20240723-dbbd2d86b
       command:
       - checkconfig
       args:
